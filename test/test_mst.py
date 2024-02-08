@@ -35,6 +35,19 @@ def check_mst(adj_mat: np.ndarray,
             total += mst[i, j]
     assert approx_equal(total, expected_weight), 'Proposed MST has incorrect expected weight'
 
+    # assert that your number of nodes between your MST and adjacency matrix remains the same.
+    # you should not have less nodes in your MST 
+
+    # Check that you have all nodes here 
+    assert ( len(mst) == len(adj_mat) ) 
+
+    # Check for disconnected graphs here - take length of all connected nodes
+    assert ( len(mst[~np.all(adj_mat == 0, axis=0)]) == len(adj_mat[~np.all(adj_mat == 0, axis=0)]) ) 
+
+    # assert that your MST has n - 1 edges, where n=number of nodes. 
+    # We multiply by two because our adjacency matrix is symmetric. 
+    assert ( np.count_nonzero(mst) == (len(adj_mat[~np.all(adj_mat == 0, axis=0)]) - 1) * 2)
+
 
 def test_mst_small():
     """
@@ -71,4 +84,17 @@ def test_mst_student():
     TODO: Write at least one unit test for MST construction.
     
     """
-    pass
+    # this unit test checks for a disconnected graph where the last node is not connected to the rest of the graph.
+    
+    file_path = './data/disconnected_graph.csv'
+    g = Graph(file_path)
+    g.construct_mst()
+    check_mst(g.adj_mat, g.mst, 4)
+
+def test_mst_one_node():
+    # this unit test ensures that a MST containing only 1 node will return 0 for adjacency matrix (representing just the same node). 
+
+    file_path = './data/one_node.csv'
+    g = Graph(file_path)
+    g.construct_mst()
+    assert (g.mst == 0)
